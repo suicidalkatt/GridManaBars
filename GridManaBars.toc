@@ -5,7 +5,7 @@
 ## Notes-zhTW: [Grid] 在 Grid 框架旁邊顯示法力條。
 ## Notes-zhCN: [Grid] 在 Grid 框体内设置法力条。
 ## Author: Adelea@EU-Bronzebeard, Julith
-## Version: 1.12
+## Version: 1.13
 ## Grid Author: Pastamancer & Maia
 ## X-Website: http://wowace.com/wiki/Grid
 ## Dependencies: Grid

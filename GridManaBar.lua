@@ -8,6 +8,7 @@ local GridFrame = Grid:GetModule("GridFrame")
 GridMBFrame = GridFrame:NewModule("GridMBFrame")
 
 GridMBFrame.defaultDB = {
+	texture = "Flat",
     size = 0.3,
     side = "Right",
 }
@@ -25,13 +26,28 @@ local mb_options = {
     name = L["Mana Bar"],
     desc = L["Mana Bar options."],
     args = {
+		["Manabar Texture"] = {
+			name = "Texture",
+			type = "select",
+			order = 1,
+            dialogControl = "LSM30_Statusbar",
+            values = AceGUIWidgetLSMlists.statusbar,
+			get = function() 
+				return GridMBFrame.db.profile.texture 
+			end,			
+			set = function(_, v) 
+				GridMBFrame.db.profile.texture = v
+				GridFrame:UpdateAllFrames()				
+			end,
+		},
         ["Manabar size"] = {
             type = "range",
             name = L["Size"],
             desc = L["Percentage of frame for mana bar"],
+			order = 2,
             max = 90,
-            min = 10,
-            step = 5,
+            min = 1,
+            step = 1,
             get = function ()
                 return GridMBFrame.db.profile.size * 100
                 end,
@@ -43,6 +59,7 @@ local mb_options = {
         ["Manabar side"] = {
             type = "select",
             name = L["Side"],
+			order = 3,
             desc = L["Side of frame manabar attaches to"],
             get = function ()
                 return GridMBFrame.db.profile.side
@@ -87,7 +104,7 @@ function GridMBFrame:OnInitialize()
 
         -- Reset
         function(self)
-            local texture = SML:Fetch("statusbar", GridFrame.db.profile.texture) or "Interface\\Addons\\Grid\\gradient32x32"
+            local texture = SML:Fetch("statusbar", GridMBFrame.db.profile.texture) or "Interface\\Addons\\Grid\\gradient32x32"
             local frame = self.__owner
             local side = GridMBFrame.db.profile.side
             local healthBar = frame.indicators.bar
@@ -97,36 +114,36 @@ function GridMBFrame:OnInitialize()
             
             --set anchor of manabar            
             self:ClearAllPoints()  
-            --healthBar:ClearAllPoints()
+            healthBar:ClearAllPoints()
             
             if side == "Right" then
                 self:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -offset, -offset)
                 self:SetWidth((frame:GetWidth()-2*offset) * barWidth)
                 self:SetHeight((frame:GetHeight()-2*offset))
                 self:SetOrientation("VERTICAL")
-                --healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, -offset)
-                --healthBar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT")
+                healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, -offset)
+                healthBar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT")
             elseif side == "Left" then
                 self:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, -offset)
                 self:SetWidth((frame:GetWidth()-2*offset) * barWidth)
                 self:SetHeight((frame:GetHeight()-2*offset))
                 self:SetOrientation("VERTICAL")
-                --healthBar:SetPoint("TOPLEFT", self, "TOPRIGHT")
-                --healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -offset, offset)
+                healthBar:SetPoint("TOPLEFT", self, "TOPRIGHT")
+                healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -offset, offset)
             elseif side == "Bottom" then
                 self:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", offset, offset)
                 self:SetWidth((frame:GetWidth()-2*offset))
                 self:SetHeight((frame:GetHeight()-2*offset) * barWidth)
                 self:SetOrientation("HORIZONTAL")
-                --healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, -offset)
-                --healthBar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT")
+                healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, -offset)
+                healthBar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT")
             else
                 self:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, -offset)
                 self:SetWidth((frame:GetWidth()-2*offset))
                 self:SetHeight((frame:GetHeight()-2*offset) * barWidth)
                 self:SetOrientation("HORIZONTAL")
-                --healthBar:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
-                --healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -offset, offset)
+                healthBar:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
+                healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -offset, offset)
             end
             
             if self:IsShown() then
@@ -148,7 +165,7 @@ function GridMBFrame:OnInitialize()
             if not value or not maxValue then return end
             self:SetMinMaxValues(0, maxValue)
             self:SetValue(value)            
-
+			
             if color then
                 if GridFrame.db.profile.invertBarColor then
                     self:SetStatusBarColor(color.r,color.g,color.b,color.a)
